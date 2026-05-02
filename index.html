@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxi Servicios - Pi Store</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        :root {
+            --pi-purple: #674ea7;
+            --pi-gold: #ffa500;
+            --white: #ffffff;
+            --gray: #666666;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f4f4; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background-color: var(--pi-purple); color: var(--white); padding: 4px; text-align: center; border-bottom: 2px solid var(--pi-gold); }   
+        .content { flex: 1; } /* Empuja el footer hacia abajo */
+        .login-section { text-align: center; padding: 4px; }
+        .btn-pi { background-color: var(--pi-gold); color: rgb(255, 255, 255); border: none; padding: 4px 10px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1.1em; }
+        
+        .section-title { 
+            padding: 8px; color: var(--pi-purple); text-align: center; 
+            border-bottom: 3px solid var(--pi-gold); margin: 15px auto; 
+            background: rgb(255, 174, 0); max-width: 90%;
+        }
+
+        #loading-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.8); z-index: 1000; justify-content: center;
+            align-items: center; font-weight: bold; color: var(--pi-purple);
+        }
+        
+        .grid-container {display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding: 0 20px 20px 20px; }
+        .card { background: white; border-radius: 12px; padding: 25px 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            transition: 0.3s; cursor: pointer; text-decoration: none; color: #333; font-size: 1.2em; font-weight: bold; border: 1px solid transparent;}
+        .card span { font-size: 2.5em; display: block; margin-bottom: 10px; }
+        .card:hover { transform: translateY(-5px); border: 1px solid var(--pi-purple); background-color: #ffa500; }
+
+        .products-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; padding: 5px; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #eee; display: flex; flex-direction: column; }
+        .product-image { background: #eee; height: 180px; display: flex; align-items: center; justify-content: center; font-size: 4em; color: #ccc; }
+        .product-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-info h3 { margin: 0 0 10px 0; font-size: 1.2em; color: #222; height: 2.4em; overflow: hidden; }
+        .price-tag { color: var(--pi-purple); font-weight: bold; font-size: 1.1em; margin-top: auto; border-top: 1px solid #eee; padding-top: 5px; }
+        .pi-value { color: var(--pi-gold); font-size: 1.3em; display: block; }
+        .buy-button { width: 100%; background: var(--pi-purple); color: white; border: none; padding: 8px; margin-top: 15px; cursor: pointer; border-radius: 8px; font-weight: bold; }
+
+        /* Estilo Letra Pequeña - Contacto */
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.75em;
+            color: var(--gray);
+            border-top: 1px solid #ddd;
+            background-color: #f9f9f9;
+            margin-top: 30px;
+        }
+        footer p { margin: 2px 0; }
+    </style>
+</head>
+<body>
+
+<div id="loading-overlay">Procesando con Pi Network...</div>
+
+<div class="content">
+    <header>
+        <h1>MAXI SERVICIOS</h1>
+        <h2>Soluciones que conectan</h2>
+        <p>Red líder en la venta de artículos tecnológicos y prestación de servicios digitales en Colombia</p>
+    </header>
+
+    <div class="login-section">
+        <button id="pi-login" class="btn-pi" onclick="loginWithPi()">Iniciar Sesión con Pi Network</button>
+        <p id="user-info" style="font-weight: bold; color: var(--pi-purple);"></p>
+    </div>
+
+    <section style="text-align: center;">
+        <div style="display: inline-block; text-align: center;">
+            <h4 style="margin: 0 0 4px 0; color: var(--pi-purple);">Pagos de facturas</h4>
+            <p style="margin: 0; font-size: 0.7em; color: #666;">Servicios públicos, impuestos, créditos y más.</p>
+            <h4 style="margin: 0 0 4px 0; color: var(--pi-purple);">Recargas y paquetes de celular</h4>
+            <p style="margin: 0; font-size: 0.7em; color: #666;">Todas las compañías telefónicas.</p>
+            <h4 style="margin: 0 0 4px 0; color: var(--pi-purple);">Venta de pines de juegos</h4>
+            <p style="margin: 0; font-size: 0.7em; color: #666;">Netflix, Spotify, Amazon, Roblox, Free Fire.</p>
+            <h4 style="margin: 0 0 4px 0; color: var(--pi-purple);">Giros nacionales e internacionales</h4>
+            <p style="margin: 0; font-size: 0.7em; color: #666;">Envío y recepción de dinero rápida.</p>
+            <h4 style="margin: 0 0 4px 0; color: var(--pi-purple);">Depósitos y retiros bancarios</h4>
+            <p style="margin: 0; font-size: 0.7em; color: #666;">Nequi, Daviplata, BBVA y otros.</p>
+            <h4 style="margin: 0 0 4px 0; color: var(--pi-purple);">Otros servicios</h4>
+            <p style="margin: 0; font-size: 0.7em; color: #666;">Sorteos, chance, apuestas deportivas, certificados.</p>
+        </div>
+    </section>
+
+    <h2 class="section-title">Categorías</h2>
+    <div class="grid-container">
+        <a href="https://maxiservicios.cercia.co/categorias/telefonia-celular" class="card"><span>📱</span>Telefonía</a>
+        <a href="https://maxiservicios.cercia.co/categorias/accesorios-ps5" class="card"><span>🎮</span>Accesorios</a>
+        <a href="https://maxiservicios.cercia.co/categorias/pines-electronicos" class="card"><span>🎟️</span>Pines</a>
+        <a href="https://maxiservicios.cercia.co/categorias/corresponsal" class="card"><span>🏦</span>Corresponsal</a>
+        <a href="https://maxiservicios.cercia.co/categorias/apuestas-deportivas" class="card"><span>⚽</span>Apuestas</a>
+        <a href="https://maxiservicios.cercia.co/categorias/soat" class="card"><span>🚗</span>SOAT</a>
+    </div>
+
+    <h2 class="section-title">Productos y Servicios</h2>
+    <div class="products-container" id="product-list"></div>
+</div>
+
+<footer>
+    <p><strong>Maxi Servicios</strong></p>
+    <p>WhatsApp: 3228713422 | Email: ms.maxiservicios@gmail.com</p>
+    <p>Cr 15 #14-60, Mocoa, Putumayo, Colombia</p>
+</footer>
+
+<script>
+    const Pi = window.Pi;
+    Pi.init({ version: "2.0", sandbox: true });
+
+    let TASA_PI_COP = 648.81; 
+    const BACKEND_URL = "https://tu-servidor.com/api"; 
+
+    const productosData = [
+        { id: 1, nombre: "Licencia Digital Windows 11", desc: "Activación permanente para tu PC.", cop: 50000, icon: "💻" },
+        { id: 2, nombre: "Pin Netflix 20.000 COP", desc: "Saldo para tu cuenta de streaming.", cop: 20000, icon: "🎟️" },
+        { id: 3, nombre: "Audífonos Gamer", desc: "Sonido envolvente para consolas.", cop: 85000, icon: "🎧" },
+        { id: 4, nombre: "Recarga BetPlay", desc: "Saldo inmediato para apuestas.", cop: 10000, icon: "⚽" },
+        { id: 5, nombre: "Gestión SOAT Digital", desc: "Trámite rápido para tu vehículo.", cop: 450000, icon: "🚗" },
+        { id: 6, nombre: "Recarga Movistar / Claro", desc: "Paquete de datos prepago.", cop: 5000, icon: "📶" }
+    ];
+
+    function toggleLoading(show) { document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none'; }
+
+    function renderProducts() {
+        const container = document.getElementById('product-list');
+        if (!container) return;
+        container.innerHTML = ''; 
+        productosData.forEach(p => {
+            const precioPi = (p.cop / TASA_PI_COP).toFixed(4);
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `<div class="product-image">${p.icon}</div><div class="product-info"><h3>${p.nombre}</h3><p>${p.desc}</p><div class="price-tag">COP $${p.cop.toLocaleString('es-CO')}<span class="pi-value">${precioPi} π</span></div><button class="buy-button" onclick="handlePayment(${precioPi}, '${p.nombre}')">Comprar con Pi</button></div>`;
+            container.appendChild(card);
+        });
+    }
+
+    async function loginWithPi() {
+        toggleLoading(true);
+        try {
+            const scopes = ['username', 'payments', 'wallet_address'];
+            const auth = await Pi.authenticate(scopes, onIncompletePaymentFound);
+            localStorage.setItem('maxi_session', auth.accessToken);
+            document.getElementById('user-info').innerText = "Usuario: " + auth.user.username;
+            document.getElementById('pi-login').style.display = 'none';
+            renderProducts();
+        } catch (err) { alert("Error de conexión con la Wallet."); } 
+        finally { toggleLoading(false); }
+    }
+
+    async function handlePayment(amount, productName) {
+        toggleLoading(true);
+        try {
+            await Pi.createPayment({
+                amount: parseFloat(amount),
+                memo: `MaxiServicios: ${productName}`,
+                metadata: { product_id: productName.toLowerCase().replace(/ /g, "_") },
+            }, {
+                onReadyForServerApproval: async (id) => { await fetch(`${BACKEND_URL}/approve`, { method: 'POST', body: JSON.stringify({ id }) }); },
+                onReadyForServerCompletion: async (id, txid) => { 
+                    await fetch(`${BACKEND_URL}/complete`, { method: 'POST', body: JSON.stringify({ id, txid }) });
+                    alert("Pago exitoso."); 
+                },
+                onCancel: (id) => toggleLoading(false),
+                onError: (err) => { alert("Error."); toggleLoading(false); },
+            });
+        } catch (err) { alert("Inicie sesión."); toggleLoading(false); }
+    }
+
+    function onIncompletePaymentFound(p) { console.warn("Pendiente:", p.identifier); }
+    window.onload = () => { renderProducts(); };
+</script>
+</body>
+</html>
