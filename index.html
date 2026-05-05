@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maxi Servicios - Pi Store</title>
+    <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+    <style>
+        :root {
+            --pi-purple: #674ea7;
+            --pi-gold: #ffa500;
+            --white: #ffffff;
+            --gray: #666666;
+        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f4f4; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background-color: var(--pi-purple); color: var(--white); padding: 4px; text-align: center; border-bottom: 2px solid var(--pi-gold); }   
+        .content { flex: 1; }
+        .login-section { text-align: center; padding: 4px; }
+        .btn-pi { background-color: var(--pi-gold); color: rgb(255, 255, 255); border: none; padding: 4px 10px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 1.1em; }
+        .section-title { padding: 8px; color: var(--pi-purple); text-align: center; border-bottom: 3px solid var(--pi-gold); margin: 15px auto; background: rgb(255, 174, 0); max-width: 90%; }
+        #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1000; justify-content: center; align-items: center; font-weight: bold; color: var(--pi-purple); }
+        .grid-container {display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; padding: 0 20px 20px 20px; }
+        .card { background: white; border-radius: 12px; padding: 25px 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; cursor: pointer; text-decoration: none; color: #333; font-size: 1.2em; font-weight: bold; border: 1px solid transparent;}
+        .card:hover { transform: translateY(-5px); border: 1px solid var(--pi-purple); background-color: #ffa500; }
+        .products-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; padding: 5px; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border: 1px solid #eee; display: flex; flex-direction: column; }
+        .product-image { background: #eee; height: 180px; display: flex; align-items: center; justify-content: center; font-size: 4em; color: #ccc; }
+        .product-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .buy-button { width: 100%; background: var(--pi-purple); color: white; border: none; padding: 8px; margin-top: 15px; cursor: pointer; border-radius: 8px; font-weight: bold; }
+        footer { text-align: center; padding: 20px; font-size: 0.75em; color: var(--gray); border-top: 1px solid #ddd; background-color: #f9f9f9; margin-top: 30px; }
+    </style>
+</head>
+<body>
+<div id="loading-overlay">Procesando con Pi Network...</div>
+<div class="content">
+    <header>
+        <h1>MAXI SERVICIOS</h1>
+        <p>Red líder en tecnología y servicios digitales en Colombia</p>
+    </header>
+    <div class="login-section">
+        <button id="pi-login" class="btn-pi" onclick="loginWithPi()">Iniciar Sesión con Pi Network</button>
+        <p id="user-info" style="font-weight: bold; color: var(--pi-purple);"></p>
+    </div>
+    <h2 class="section-title">Productos y Servicios</h2>
+    <div class="products-container" id="product-list"></div>
+</div>
+<footer>
+    <p><strong>Maxi Servicios</strong> - Cr 15 #14-60, Mocoa, Putumayo</p>
+</footer>
+<script>
+    const Pi = window.Pi;
+    Pi.init({ version: "2.0", sandbox: true });
+    let TASA_PI_COP = 648.81; 
+    const productosData = [
+        { id: 1, nombre: "Licencia Windows 11", cop: 50000, icon: "💻" },
+        { id: 2, nombre: "Pin Netflix 20k", cop: 20000, icon: "🎟️" }
+    ];
+    function renderProducts() {
+        const container = document.getElementById('product-list');
+        container.innerHTML = productosData.map(p => {
+            const precioPi = (p.cop / TASA_PI_COP).toFixed(4);
+            return `<div class="product-card"><div class="product-image">${p.icon}</div><div class="product-info"><h3>${p.nombre}</h3><p>COP $${p.cop.toLocaleString()}</p><strong>${precioPi} π</strong><button class="buy-button" onclick="handlePayment(${precioPi}, '${p.nombre}')">Comprar</button></div></div>`;
+        }).join('');
+    }
+    async function loginWithPi() {
+        try {
+            const auth = await Pi.authenticate(['username', 'payments'], (p) => console.log(p));
+            document.getElementById('user-info').innerText = "Hola, " + auth.user.username;
+            renderProducts();
+        } catch (err) { alert("Error de login"); }
+    }
+    window.onload = renderProducts;
+</script>
+</body>
+</html>
